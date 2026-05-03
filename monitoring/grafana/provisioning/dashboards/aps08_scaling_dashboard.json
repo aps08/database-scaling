@@ -1,0 +1,132 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "title": "Postgres Settings",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "collapsed": false
+    },
+    {
+      "title": "Version",
+      "type": "stat",
+      "gridPos": { "h": 3, "w": 4, "x": 0, "y": 1 },
+      "targets": [{ "expr": "pg_static", "legendFormat": "{{short_version}}", "refId": "A" }],
+      "options": { "textMode": "name" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" } } }
+    },
+    {
+      "title": "Database Size",
+      "type": "stat",
+      "gridPos": { "h": 3, "w": 4, "x": 4, "y": 1 },
+      "targets": [{ "expr": "pg_database_size_bytes{datname=\"aps08_monitoring_db\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "decbytes" } }
+    },
+    {
+      "title": "Max Connections",
+      "type": "stat",
+      "gridPos": { "h": 3, "w": 4, "x": 8, "y": 1 },
+      "targets": [{ "expr": "pg_settings_max_connections", "refId": "A" }]
+    },
+    {
+      "title": "Shared Buffers",
+      "type": "stat",
+      "gridPos": { "h": 3, "w": 4, "x": 12, "y": 1 },
+      "targets": [{ "expr": "pg_settings_shared_buffers_bytes", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "decbytes" } }
+    },
+    {
+      "title": "Effective Cache",
+      "type": "stat",
+      "gridPos": { "h": 3, "w": 4, "x": 16, "y": 1 },
+      "targets": [{ "expr": "pg_settings_effective_cache_size_bytes", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "decbytes" } }
+    },
+    {
+      "title": "Max WAL Size",
+      "type": "stat",
+      "gridPos": { "h": 3, "w": 4, "x": 20, "y": 1 },
+      "targets": [{ "expr": "pg_settings_max_wal_size_bytes", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "decbytes" } }
+    },
+    {
+      "title": "API & Throughput",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 4 },
+      "collapsed": false
+    },
+    {
+      "title": "Read Throughput (GET)",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 5 },
+      "targets": [{ "expr": "sum(rate(aps08_api_requests_total{method=~\"GET|HEAD|OPTIONS\"}[1m]))", "legendFormat": "Reads/s", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "reqps", "color": { "mode": "fixed", "fixedColor": "blue" } } }
+    },
+    {
+      "title": "Write Throughput (POST/PUT/DELETE)",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 5 },
+      "targets": [{ "expr": "sum(rate(aps08_api_requests_total{method=~\"POST|PUT|DELETE|PATCH|UPDATE\"}[1m]))", "legendFormat": "Writes/s", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "reqps", "color": { "mode": "fixed", "fixedColor": "orange" } } }
+    },
+    {
+      "title": "Database Scaling Experiment",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 11 },
+      "collapsed": false
+    },
+    {
+      "title": "Avg Query Latency (The Experiment)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
+      "targets": [
+        { "expr": "rate(aps08_db_query_latency_seconds_sum[1m]) / rate(aps08_db_query_latency_seconds_count[1m])", "legendFormat": "{{query_type}}", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "title": "Database Internals",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 20 },
+      "collapsed": false
+    },
+    {
+      "title": "Total Records per Table",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 21 },
+      "targets": [{ "expr": "pg_stat_user_tables_n_live_tup{datname=\"aps08_monitoring_db\"}", "legendFormat": "{{relname}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "options": { "textMode": "value_and_name" }
+    },
+    {
+      "title": "Index Hit Rate (%)",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 21 },
+      "targets": [{ "expr": "sum(rate(pg_stat_user_tables_idx_tup_fetch{datname=\"aps08_monitoring_db\"}[1m])) / (sum(rate(pg_stat_user_tables_idx_tup_fetch{datname=\"aps08_monitoring_db\"}[1m])) + sum(rate(pg_stat_user_tables_seq_tup_read{datname=\"aps08_monitoring_db\"}[1m]))) * 100", "refId": "A" }],
+      "fieldConfig": { "defaults": { "min": 0, "max": 100, "unit": "percent" } }
+    },
+    {
+      "title": "Tuple Ops Breakdown",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 21 },
+      "targets": [
+        { "expr": "sum(rate(pg_stat_user_tables_n_tup_ins{datname=\"aps08_monitoring_db\"}[1m]))", "legendFormat": "INSERT", "refId": "A" },
+        { "expr": "sum(rate(pg_stat_user_tables_n_tup_upd{datname=\"aps08_monitoring_db\"}[1m]))", "legendFormat": "UPDATE", "refId": "B" },
+        { "expr": "sum(rate(pg_stat_user_tables_n_tup_del{datname=\"aps08_monitoring_db\"}[1m]))", "legendFormat": "DELETE", "refId": "C" }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["aps08", "production", "scaling"],
+  "time": { "from": "now-15m", "to": "now" },
+  "title": "APS08 Database Scaling Monitor",
+  "uid": "aps08-monitor",
+  "version": 6
+}

@@ -1,2 +1,5 @@
-# database-scaling
-Learn how database scaling by replicate things on local system using docker, WSL2 and other observability tools.
+# Database Scaling Setup
+
+This repository contains setups to try scaling a PostgreSQL database and replicate it locally.
+
+- [Monitoring and Indexing](./monitoring/README.md): See indexing in action

@@ -3,3 +3,4 @@
 This repository contains setups to try scaling a PostgreSQL database and replicate it locally.
 
 - [Monitoring and Indexing](./monitoring/README.md): See indexing in action
+- [Replication](./replication/README.md): See how replication works

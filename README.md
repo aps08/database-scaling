@@ -2,7 +2,9 @@
 
 - [Monitoring and Indexing](./monitoring/README.md): See indexing in action
 - [Replication](./replication/README.md): See how replication works
+- [Partitioning](./partitioning/README.md): Complete guide to PostgreSQL Table Partitioning with FastAPI & Docker
 - [RDS](./rds/README.md): See how RDS scale storage without downtime.
+
 
 -----------------------------------------------------------------------------------------------------------------
 

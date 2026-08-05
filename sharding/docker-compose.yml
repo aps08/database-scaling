@@ -1,0 +1,100 @@
+services:
+  postgres_shard_0:
+    image: postgres:15-alpine
+    container_name: postgres_shard_0
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: shard_0
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    networks:
+      - sharding_net
+
+  postgres_shard_1:
+    image: postgres:15-alpine
+    container_name: postgres_shard_1
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: shard_1
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    networks:
+      - sharding_net
+
+  postgres_shard_2:
+    image: postgres:15-alpine
+    container_name: postgres_shard_2
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: shard_2
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    networks:
+      - sharding_net
+
+  postgres_shard_3:
+    image: postgres:15-alpine
+    container_name: postgres_shard_3
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: shard_3
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    networks:
+      - sharding_net
+
+  fastapi_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_sharding_app
+    ports:
+      - "8000:8000"
+    environment:
+      SHARD_0_URL: postgresql://user:pass@postgres_shard_0:5432/shard_0
+      SHARD_1_URL: postgresql://user:pass@postgres_shard_1:5432/shard_1
+      SHARD_2_URL: postgresql://user:pass@postgres_shard_2:5432/shard_2
+      SHARD_3_URL: postgresql://user:pass@postgres_shard_3:5432/shard_3
+    depends_on:
+      postgres_shard_0:
+        condition: service_healthy
+      postgres_shard_1:
+        condition: service_healthy
+      postgres_shard_2:
+        condition: service_healthy
+      postgres_shard_3:
+        condition: service_healthy
+    networks:
+      - sharding_net
+
+networks:
+  sharding_net:
+    driver: bridge
